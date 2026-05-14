@@ -1,0 +1,32 @@
+name: Atualizar Feed RSS
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Roda todos os dias à meia-noite
+  workflow_dispatch: # Permite que você rode manualmente para testar
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Instalar dependências
+        run: pip install feedgen
+
+      - name: Executar script
+        run: python script.py
+
+      - name: Commit e Push das alterações
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add feed.xml
+          git commit -m "Atualização diária do feed: $(date)" || exit 0
+          git push
